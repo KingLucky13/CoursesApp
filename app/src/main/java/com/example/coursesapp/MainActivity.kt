@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewModelScope
 import com.example.coursesapp.data.dataModule
+import com.example.coursesapp.presentation.MainScreen
+import com.example.coursesapp.presentation.viewModelModule
 import com.example.coursesapp.ui.theme.CoursesAppTheme
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
@@ -24,11 +26,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         startKoin {
             androidContext(this@MainActivity)
-            modules(dataModule)
+            modules(dataModule, viewModelModule)
         }
         enableEdgeToEdge()
         setContent {
             CoursesAppTheme {
+                MainScreen()
             }
         }
     }

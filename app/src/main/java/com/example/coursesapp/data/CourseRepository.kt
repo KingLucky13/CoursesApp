@@ -1,5 +1,6 @@
 package com.example.coursesapp.data
 
+import android.util.Log
 import com.example.coursesapp.domain.CourseDomain
 import com.example.coursesapp.domain.toDomain
 import java.io.IOException

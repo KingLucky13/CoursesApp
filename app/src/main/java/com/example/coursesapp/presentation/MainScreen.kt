@@ -45,7 +45,7 @@ import com.example.coursesapp.ui.theme.Glass
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
+fun MainScreen(viewModel: MainViewModel) {
     val state by viewModel.stateFlow.collectAsState()
     Search()
     Sort()

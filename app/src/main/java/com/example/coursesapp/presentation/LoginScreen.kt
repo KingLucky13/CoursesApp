@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -29,47 +31,49 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.coursesapp.R
 import com.example.coursesapp.ui.theme.CoursesAppTheme
 import com.example.coursesapp.ui.theme.LightGrey
-
-@Preview(showBackground = true, backgroundColor = 0xFF151515)
+import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
-fun LoginScreen() {
-    CoursesAppTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            Text(
-                text = stringResource(R.string.login),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.offset(x = 16.dp, y = 140.dp)
-            )
-            Inputs()
-            LoginButton()
-            Actions()
-            Divider(
-                modifier = Modifier
-                    .offset(x = 16.dp, y = 502.dp)
-                    .width(328.dp),
-                thickness = 1.dp,
-                color = colorResource(R.color.stroke)
-            )
-            SocialMedia()
-        }
-    }
+fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
+    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Text(
+            text = stringResource(R.string.login),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.offset(x = 16.dp, y = 140.dp)
+        )
+        Inputs(viewModel,state)
+        LoginButton(viewModel)
+        Actions()
+        Divider(
+            modifier = Modifier
+                .offset(x = 16.dp, y = 502.dp)
+                .width(328.dp),
+            thickness = 1.dp,
+            color = colorResource(R.color.stroke)
+        )
+        SocialMedia()
+    }
 }
 
 
 @Composable
-fun Inputs() {
+fun Inputs(viewModel: LoginViewModel,state: LoginState) {
     Column(
         modifier = Modifier.offset(x = 16.dp, y = 204.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -83,21 +87,26 @@ fun Inputs() {
                 color = MaterialTheme.colorScheme.onPrimary
             )
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = state.email,
+                onValueChange = {viewModel.onEmailChanged(it)},
                 modifier = Modifier
                     .width(328.dp)
                     .height(40.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(LightGrey),
-                label = {
+                    .background(LightGrey)
+                ,
+                textStyle = MaterialTheme.typography.bodyMedium,
+
+                placeholder = {
                     Text(
                         text = stringResource(R.string.email_example),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.alpha(0.5f)
                     )
-                }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType =KeyboardType.Email),
+                singleLine = true
             )
         }
 
@@ -108,21 +117,24 @@ fun Inputs() {
                 color = MaterialTheme.colorScheme.onPrimary
             )
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = state.password,
+                onValueChange = {viewModel.onPasswordChanged(it)},
                 modifier = Modifier
                     .width(328.dp)
                     .height(40.dp)
                     .clip(RoundedCornerShape(30.dp))
                     .background(LightGrey),
-                label = {
+                placeholder = {
                     Text(
                         text = stringResource(R.string.enter_password),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.alpha(0.5f)
                     )
-                }
+                },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                singleLine = true
             )
         }
 
@@ -130,9 +142,9 @@ fun Inputs() {
 }
 
 @Composable
-fun LoginButton() {
+fun LoginButton(viewModel: LoginViewModel) {
     Button(
-        onClick = {},
+        onClick = {viewModel.authorization()},
         modifier = Modifier
             .offset(x = 16.dp, y = 376.dp)
             .size(328.dp, 40.dp),
@@ -206,12 +218,14 @@ fun SocialMedia() {
             modifier = Modifier
                 .size(156.dp, 40.dp)
                 .clip(RoundedCornerShape(30.dp))
-                .background( brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        colorResource(R.color.ok_light_orange),
-                        colorResource(R.color.ok_dark_orange)
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            colorResource(R.color.ok_light_orange),
+                            colorResource(R.color.ok_dark_orange)
+                        )
                     )
-                )),
+                ),
             onClick = {}
         ) {
             Column {

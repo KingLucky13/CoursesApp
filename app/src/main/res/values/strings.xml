@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">CoursesApp</string>
     <string name="details">Подробнее</string>
+    <string name="search">Search for courses</string>
+    <string name="filter_name">По дате добавления</string>
 </resources>

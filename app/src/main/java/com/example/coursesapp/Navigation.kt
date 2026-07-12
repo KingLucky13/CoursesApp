@@ -13,23 +13,9 @@ import com.example.coursesapp.presentation.MainViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-interface Navigate {
-    fun navigateToMain()
-    fun navigateToFavourites()
-}
 
  enum class Route{
     Login,Main,Favourites
-}
-
-class AppNavigator(private val navController: NavController) : Navigate {
-    override fun navigateToMain() {
-        navController.navigate(Route.Main.toString())
-    }
-
-    override fun navigateToFavourites() {
-        TODO("Not yet implemented")
-    }
 }
 
 @Composable
@@ -37,24 +23,16 @@ fun AppNavigation() {
 
     val navController = rememberNavController()
 
-    val appNavigator = remember { AppNavigator(navController) }
-
     NavHost(
         navController = navController,
         startDestination = Route.Login.toString()
     ) {
-        composable(Route.Login.toString()) {
-            val viewModel: LoginViewModel = koinViewModel(
-                parameters = { parametersOf(appNavigator) }
-            )
-            LoginScreen(viewModel = viewModel)
+        composable(Route.Login.name) {
+            LoginScreen(navController = navController)
         }
 
-        composable(Route.Main.toString()) {
-            val viewModel: MainViewModel = koinViewModel(
-                parameters = { parametersOf(appNavigator) }
-            )
-            MainScreen(viewModel = viewModel)
+        composable(Route.Main.name) {
+            MainScreen(navController = navController)
         }
     }
 }

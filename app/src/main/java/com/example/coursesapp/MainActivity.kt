@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.coursesapp.data.dataModule
+import com.example.coursesapp.domain.domainModule
 import com.example.coursesapp.presentation.LoginScreen
 import com.example.coursesapp.presentation.LoginViewModel
 import com.example.coursesapp.presentation.MainScreen
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         startKoin {
             androidContext(this@MainActivity)
-            modules(dataModule, viewModelModule)
+            modules(dataModule, domainModule,viewModelModule)
         }
         enableEdgeToEdge()
         setContent {

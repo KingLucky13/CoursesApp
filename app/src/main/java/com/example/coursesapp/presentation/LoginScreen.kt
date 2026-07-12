@@ -1,5 +1,7 @@
 package com.example.coursesapp.presentation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,29 +24,64 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.coursesapp.R
-import com.example.coursesapp.ui.theme.CoursesAppTheme
 import com.example.coursesapp.ui.theme.LightGrey
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.coursesapp.Route
+import androidx.core.net.toUri
+
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
+fun LoginScreen(viewModel: LoginViewModel = koinViewModel(), navController: NavController) {
+
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val context =  LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                LoginEvent.NavigateToMain -> {
+                    navController.navigate(Route.Main.name) {
+                        popUpTo(Route.Login.name) {
+                            inclusive = true
+                        }
+                    }
+                }
+
+                LoginEvent.OpenVk -> {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        "https://vk.com".toUri()
+                    )
+                   context.startActivity(intent)
+                }
+
+                LoginEvent.OpenOk -> {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        "https://ok.ru".toUri()
+                    )
+                    context.startActivity(intent)
+                }
+
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -57,7 +94,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.offset(x = 16.dp, y = 140.dp)
         )
-        Inputs(viewModel,state)
+        Inputs(viewModel, state)
         LoginButton(viewModel)
         Actions()
         Divider(
@@ -67,13 +104,13 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
             thickness = 1.dp,
             color = colorResource(R.color.stroke)
         )
-        SocialMedia()
+        SocialMedia(viewModel)
     }
 }
 
 
 @Composable
-fun Inputs(viewModel: LoginViewModel,state: LoginState) {
+fun Inputs(viewModel: LoginViewModel, state: LoginState) {
     Column(
         modifier = Modifier.offset(x = 16.dp, y = 204.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -88,13 +125,12 @@ fun Inputs(viewModel: LoginViewModel,state: LoginState) {
             )
             OutlinedTextField(
                 value = state.email,
-                onValueChange = {viewModel.onEmailChanged(it)},
+                onValueChange = { viewModel.onEmailChanged(it) },
                 modifier = Modifier
                     .width(328.dp)
                     .height(40.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(LightGrey)
-                ,
+                    .background(LightGrey),
                 textStyle = MaterialTheme.typography.bodyMedium,
 
                 placeholder = {
@@ -105,7 +141,7 @@ fun Inputs(viewModel: LoginViewModel,state: LoginState) {
                         modifier = Modifier.alpha(0.5f)
                     )
                 },
-                keyboardOptions = KeyboardOptions(keyboardType =KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 singleLine = true
             )
         }
@@ -118,7 +154,7 @@ fun Inputs(viewModel: LoginViewModel,state: LoginState) {
             )
             OutlinedTextField(
                 value = state.password,
-                onValueChange = {viewModel.onPasswordChanged(it)},
+                onValueChange = { viewModel.onPasswordChanged(it) },
                 modifier = Modifier
                     .width(328.dp)
                     .height(40.dp)
@@ -144,7 +180,7 @@ fun Inputs(viewModel: LoginViewModel,state: LoginState) {
 @Composable
 fun LoginButton(viewModel: LoginViewModel) {
     Button(
-        onClick = {viewModel.authorization()},
+        onClick = { viewModel.onLoginClicked() },
         modifier = Modifier
             .offset(x = 16.dp, y = 376.dp)
             .size(328.dp, 40.dp),
@@ -192,7 +228,7 @@ fun Actions() {
 }
 
 @Composable
-fun SocialMedia() {
+fun SocialMedia(viewModel: LoginViewModel) {
     Row(
         modifier = Modifier
             .offset(x = 16.dp, y = 534.dp)
@@ -204,7 +240,7 @@ fun SocialMedia() {
                 .size(156.dp, 40.dp)
                 .clip(RoundedCornerShape(30.dp))
                 .background(colorResource(R.color.vk_blue)),
-            onClick = {}
+            onClick = {viewModel.onVkClicked()}
         ) {
             Icon(
                 painterResource(R.drawable.vk),
@@ -226,7 +262,7 @@ fun SocialMedia() {
                         )
                     )
                 ),
-            onClick = {}
+            onClick = {viewModel.onOkClicked()}
         ) {
             Column {
                 Icon(

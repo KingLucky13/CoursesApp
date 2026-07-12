@@ -48,29 +48,19 @@ import com.example.coursesapp.ui.theme.Glass
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = koinViewModel(), navController: NavController) {
+fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
     val state by viewModel.stateFlow.collectAsState()
 
-    Scaffold(
-        bottomBar = {
-            BottomBar()
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Search()
-            Sort()
-            LazyColumn(
-                modifier = Modifier.offset(x = 16.dp, y = 164.dp).fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(state) { course ->
-                    CourseCard(course)
-                }
-            }
+    Search()
+    Sort()
+    LazyColumn(
+        modifier = Modifier
+            .offset(x = 16.dp, y = 164.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(state) { course ->
+            CourseCard(course)
         }
     }
 }
@@ -80,7 +70,7 @@ fun Search() {
     Row(
         modifier = Modifier
             .size(328.dp, 56.dp)
-            .offset(x=16.dp,y=56.dp)
+            .offset(x = 16.dp, y = 56.dp)
             .clip(RoundedCornerShape(28.dp)),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {

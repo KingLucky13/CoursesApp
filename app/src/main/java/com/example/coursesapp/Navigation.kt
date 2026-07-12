@@ -16,8 +16,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,20 +32,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import com.example.coursesapp.presentation.FavouritesScreen
 import com.example.coursesapp.presentation.LoginScreen
 import com.example.coursesapp.presentation.LoginViewModel
 import com.example.coursesapp.presentation.MainScreen
 import com.example.coursesapp.presentation.MainViewModel
+import com.example.coursesapp.presentation.ProfileScreen
 import com.example.coursesapp.ui.theme.CoursesAppTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 
 enum class Route {
-    Login, Main, Favourites
+    Login, Main, Favourites, Profile
 }
 
 @Composable
@@ -51,22 +59,44 @@ fun AppNavigation() {
 
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = Route.Main.name
-    ) {
-        composable(Route.Login.name) {
-            LoginScreen(navController = navController)
+    Scaffold(
+        bottomBar = {
+            BottomBar(navController)
         }
+    ) { padding ->
+        NavHost(
+            modifier = Modifier.padding(padding),
+            navController = navController,
+            startDestination = Route.Login.name
+        ) {
+            composable(Route.Login.name) {
+                LoginScreen(navController = navController)
+            }
 
-        composable(Route.Main.name) {
-            MainScreen(navController = navController)
+            composable(Route.Main.name) {
+                MainScreen()
+            }
+
+            composable(Route.Favourites.name) {
+                FavouritesScreen()
+            }
+
+            composable(Route.Profile.name) {
+                ProfileScreen()
+            }
         }
     }
 }
 
+
+
 @Composable
-fun BottomBar() {
+fun BottomBar(navController: NavController) {
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
+
+    if (currentRoute == Route.Login.name) return
+
     Column {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
@@ -83,22 +113,22 @@ fun BottomBar() {
             BottomBarButton(
                 stringResource(R.string.main),
                 painterResource(R.drawable.house),
-                true,
-                {},
+                currentRoute == Route.Main.name,
+                { navController.navigate(Route.Main.name) },
                 modifier = Modifier.weight(1f)
             )
             BottomBarButton(
                 stringResource(R.string.favourites),
                 painterResource(R.drawable.bookmark),
-                false,
-                {},
+                currentRoute == Route.Favourites.name,
+                { navController.navigate(Route.Favourites.name) },
                 modifier = Modifier.weight(1f)
             )
             BottomBarButton(
                 stringResource(R.string.profile),
                 painterResource(R.drawable.person),
-                false,
-                {},
+                currentRoute == Route.Profile.name,
+                { navController.navigate(Route.Profile.name) },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -142,7 +172,7 @@ fun BottomBarButton(
                         RoundedCornerShape(16.dp)
                     )
                     .background(backgroundColor)
-                    .clickable { onClick },
+                    .clickable { onClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

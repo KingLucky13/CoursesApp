@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.coursesapp.BottomBar
 import com.example.coursesapp.R
 import com.example.coursesapp.domain.CourseDomain
 import com.example.coursesapp.ui.theme.CoursesAppTheme
@@ -48,11 +50,27 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MainScreen(viewModel: MainViewModel = koinViewModel(), navController: NavController) {
     val state by viewModel.stateFlow.collectAsState()
-    Search()
-    Sort()
-    LazyColumn(modifier = Modifier.offset(x = 16.dp,y=164.dp).fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        items(state) { course ->
-            CourseCard(course)
+
+    Scaffold(
+        bottomBar = {
+            BottomBar()
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Search()
+            Sort()
+            LazyColumn(
+                modifier = Modifier.offset(x = 16.dp, y = 164.dp).fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(state) { course ->
+                    CourseCard(course)
+                }
+            }
         }
     }
 }

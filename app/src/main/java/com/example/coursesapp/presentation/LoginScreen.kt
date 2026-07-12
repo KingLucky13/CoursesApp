@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.coursesapp.R
-import com.example.coursesapp.ui.theme.LightGrey
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.coursesapp.Route
@@ -130,7 +129,7 @@ fun Inputs(viewModel: LoginViewModel, state: LoginState) {
                     .width(328.dp)
                     .height(40.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(LightGrey),
+                    .background(colorResource(R.color.light_grey)),
                 textStyle = MaterialTheme.typography.bodyMedium,
 
                 placeholder = {
@@ -159,7 +158,7 @@ fun Inputs(viewModel: LoginViewModel, state: LoginState) {
                     .width(328.dp)
                     .height(40.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(LightGrey),
+                    .background(colorResource(R.color.light_grey)),
                 placeholder = {
                     Text(
                         text = stringResource(R.string.enter_password),

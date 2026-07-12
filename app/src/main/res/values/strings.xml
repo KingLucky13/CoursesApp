@@ -3,8 +3,6 @@
     <string name="details">Подробнее</string>
     <string name="search">Search for courses</string>
     <string name="filter_name">По дате добавления</string>
-<<<<<<< HEAD
-=======
     <string name="login">Вход</string>
     <string name="email">Email</string>
     <string name="password">Пароль</string>
@@ -13,5 +11,7 @@
     <string name="no_account">Нету аккаунта? </string>
     <string name="registration">Регистрация</string>
     <string name="forgot_password">Забыл пароль</string>
->>>>>>> loginScreen
+    <string name="main">Главная</string>
+    <string name="favourites">Избранное</string>
+    <string name="profile">Аккаунт</string>
 </resources>

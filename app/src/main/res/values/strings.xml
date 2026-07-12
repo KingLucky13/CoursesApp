@@ -3,4 +3,15 @@
     <string name="details">Подробнее</string>
     <string name="search">Search for courses</string>
     <string name="filter_name">По дате добавления</string>
+<<<<<<< HEAD
+=======
+    <string name="login">Вход</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="email_example">example@gmail.com</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="no_account">Нету аккаунта? </string>
+    <string name="registration">Регистрация</string>
+    <string name="forgot_password">Забыл пароль</string>
+>>>>>>> loginScreen
 </resources>

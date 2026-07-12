@@ -7,4 +7,7 @@ val viewModelModule = module {
     viewModel {
         MainViewModel(courseRepository = get())
     }
+    viewModel {
+        LoginViewModel(authorizationUseCase = get())
+    }
 }

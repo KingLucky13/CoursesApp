@@ -9,8 +9,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+
+data class MainState(
+    val search: String = "",
+    val courses: List<CourseDomain> = emptyList()
+)
+
 class MainViewModel(private val courseRepository: CourseRepository) : ViewModel() {
-    private val _stateFlow: MutableStateFlow<List<CourseDomain>> = MutableStateFlow(emptyList())
+    private val _stateFlow: MutableStateFlow<MainState> = MutableStateFlow(MainState())
     val stateFlow = _stateFlow.asStateFlow()
 
     init {
@@ -18,32 +24,50 @@ class MainViewModel(private val courseRepository: CourseRepository) : ViewModel(
             runCatching {
                 courseRepository.getAllCourses()
             }.onSuccess { coursesResponse ->
-                _stateFlow.value = coursesResponse.getOrNull() ?: emptyList()
+                _stateFlow.update { state ->
+                    state.copy(
+                        courses = coursesResponse.getOrNull() ?: emptyList()
+                    )
+                }
             }
         }
     }
 
     fun onBookmark(courseId: Int) {
         viewModelScope.launch {
-            _stateFlow.update { courses ->
-                courses.map { course ->
-                    if (courseId == course.id) {
-                        course.copy(hasLike = !course.hasLike)
-                    } else {
-                        course
-                    }
+            val updatedCourses = _stateFlow.value.courses.map { course ->
+                if (courseId == course.id) {
+                    course.copy(hasLike = !course.hasLike)
+                } else {
+                    course
                 }
             }
-            val hasBookmark = _stateFlow.value.find { it.id == courseId }!!.hasLike
+
+            _stateFlow.update { state ->
+                state.copy(courses = updatedCourses)
+            }
+
+            val hasBookmark = _stateFlow.value.courses.find { it.id == courseId }!!.hasLike
             courseRepository.updateBookmark(courseId, hasBookmark)
+        }
+
+    }
+
+    fun onSort() {
+        _stateFlow.update { state ->
+            state.copy(
+                courses = state.courses.sortedByDescending { course ->
+                    course.publishDate
+                }
+            )
         }
     }
 
-    fun onSort(){
-        _stateFlow.update { courses ->
-            courses.sortedByDescending{ course ->
-                course.publishDate
-            }
+    fun onSearchChanged(searchString: String){
+        _stateFlow.update { state ->
+            state.copy(
+                search = searchString
+            )
         }
     }
 }

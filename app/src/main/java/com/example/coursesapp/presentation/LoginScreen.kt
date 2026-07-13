@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,14 +34,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.coursesapp.R
 import org.koin.androidx.compose.koinViewModel
@@ -50,7 +60,7 @@ import androidx.core.net.toUri
 fun LoginScreen(viewModel: LoginViewModel = koinViewModel(), navController: NavController) {
 
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
-    val context =  LocalContext.current
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
@@ -67,7 +77,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel(), navController: NavC
                         Intent.ACTION_VIEW,
                         "https://vk.com".toUri()
                     )
-                   context.startActivity(intent)
+                    context.startActivity(intent)
                 }
 
                 LoginEvent.OpenOk -> {
@@ -122,27 +132,15 @@ fun Inputs(viewModel: LoginViewModel, state: LoginState) {
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
-            OutlinedTextField(
+            CustomTextField(
                 value = state.email,
-                onValueChange = { viewModel.onEmailChanged(it) },
-                modifier = Modifier
-                    .width(328.dp)
-                    .height(40.dp)
-                    .clip(RoundedCornerShape(30.dp))
-                    .background(colorResource(R.color.light_grey)),
-                textStyle = MaterialTheme.typography.bodyMedium,
-
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.email_example),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.alpha(0.5f)
-                    )
-                },
+                placeHolderText = stringResource(R.string.email_example),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                singleLine = true
+                visualTransformation = VisualTransformation.None,
+                viewModel::onEmailChanged
             )
+
+
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -151,30 +149,63 @@ fun Inputs(viewModel: LoginViewModel, state: LoginState) {
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
-            OutlinedTextField(
-                value = state.password,
-                onValueChange = { viewModel.onPasswordChanged(it) },
-                modifier = Modifier
-                    .width(328.dp)
-                    .height(40.dp)
-                    .clip(RoundedCornerShape(30.dp))
-                    .background(colorResource(R.color.light_grey)),
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.enter_password),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.alpha(0.5f)
-                    )
-                },
-                visualTransformation = PasswordVisualTransformation(),
+            CustomTextField(
+                state.password,
+                stringResource(R.string.enter_password),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                singleLine = true
+                visualTransformation = PasswordVisualTransformation(),
+                viewModel::onPasswordChanged
             )
         }
 
     }
 }
+
+@Composable
+fun CustomTextField(
+    value: String,
+    placeHolderText: String,
+    keyboardOptions: KeyboardOptions,
+    visualTransformation: VisualTransformation,
+    onValueChanged: (String) -> Unit
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChanged,
+        textStyle = TextStyle(
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onSurface
+        ),
+        modifier = Modifier
+            .width(328.dp)
+            .height(42.dp)
+            .background(
+                colorResource(R.color.light_grey),
+                RoundedCornerShape(30.dp)
+            )
+            .padding(horizontal = 16.dp),
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.CenterStart // ← вертикальный центр
+            ) {
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeHolderText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.alpha(0.5f)
+                    )
+                }
+                innerTextField()
+            }
+        }
+    )
+}
+
 
 @Composable
 fun LoginButton(viewModel: LoginViewModel) {
@@ -205,18 +236,22 @@ fun Actions() {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row {
-            Text(
-                text = stringResource(R.string.no_account),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-            Text(
-                text = stringResource(R.string.registration),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
+        Text(text = buildAnnotatedString {
+            withStyle(
+                SpanStyle(color = MaterialTheme.colorScheme.onPrimary)
+            ) {
+                append(stringResource(R.string.no_account))
+            }
+
+            append(" ")
+
+            withStyle(
+                SpanStyle(color = MaterialTheme.colorScheme.secondary)
+            ) {
+                append(stringResource(R.string.registration))
+            }
+        },
+            style = MaterialTheme.typography.titleSmall)
         Text(
             text = stringResource(R.string.forgot_password),
             style = MaterialTheme.typography.titleSmall,
@@ -239,7 +274,7 @@ fun SocialMedia(viewModel: LoginViewModel) {
                 .size(156.dp, 40.dp)
                 .clip(RoundedCornerShape(30.dp))
                 .background(colorResource(R.color.vk_blue)),
-            onClick = {viewModel.onVkClicked()}
+            onClick = { viewModel.onVkClicked() }
         ) {
             Icon(
                 painterResource(R.drawable.vk),
@@ -261,7 +296,7 @@ fun SocialMedia(viewModel: LoginViewModel) {
                         )
                     )
                 ),
-            onClick = {viewModel.onOkClicked()}
+            onClick = { viewModel.onOkClicked() }
         ) {
             Column {
                 Icon(

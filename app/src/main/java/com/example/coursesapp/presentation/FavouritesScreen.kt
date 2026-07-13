@@ -25,11 +25,14 @@ import org.koin.androidx.compose.koinViewModel
 fun FavouritesScreen(viewModel: FavouritesViewModel = koinViewModel()) {
     val state by viewModel.stateFlow.collectAsState()
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .offset(y = 40.dp)
-        .padding(16.dp),
-        contentAlignment = Alignment.CenterStart) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .offset(y = 40.dp)
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterStart
+    )
+    {
         Text(
             text = stringResource(R.string.favourites),
             style = MaterialTheme.typography.titleLarge,
@@ -39,7 +42,7 @@ fun FavouritesScreen(viewModel: FavouritesViewModel = koinViewModel()) {
 
     LazyColumn(
         modifier = Modifier
-            .offset(x = 16.dp, y = 100.dp)
+            .padding(top = 100.dp)
             .width(328.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {

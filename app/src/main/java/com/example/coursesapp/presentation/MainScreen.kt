@@ -1,6 +1,8 @@
 package com.example.coursesapp.presentation
 
 import android.content.res.Resources
+import android.graphics.Paint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -38,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -55,22 +59,24 @@ import java.util.Locale
 fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
     val state by viewModel.stateFlow.collectAsState()
 
-    Search()
+    Search(state.search, viewModel)
+
     Sort(viewModel)
+
     LazyColumn(
         modifier = Modifier
-            .offset(x = 16.dp, y = 164.dp)
-            .width(328.dp),
+            .fillMaxSize()
+            .padding(top = 164.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(state) { course ->
-            CourseCard(course,{viewModel.onBookmark(course.id)})
+        items(state.courses) { course ->
+            CourseCard(course, { viewModel.onBookmark(course.id) })
         }
     }
 }
 
 @Composable
-fun Search() {
+fun Search(searchString: String, viewModel: MainViewModel) {
     Row(
         modifier = Modifier
             .size(328.dp, 56.dp)
@@ -78,7 +84,8 @@ fun Search() {
             .clip(RoundedCornerShape(28.dp)),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        SearchBar()
+
+        SearchBar(searchString, viewModel)
 
         IconButton(
             modifier = Modifier
@@ -102,28 +109,38 @@ fun Search() {
 }
 
 @Composable
-fun SearchBar() {
+fun SearchBar(searchString: String, viewModel: MainViewModel) {
+
     OutlinedTextField(
-        value = "",
-        onValueChange = {},
+        value = searchString,
+        onValueChange = { viewModel.onSearchChanged(it) },
         modifier = Modifier
             .size(264.dp, 56.dp)
             .clip(RoundedCornerShape(28.dp))
             .background(MaterialTheme.colorScheme.primary),
         leadingIcon = { SearchButton() },
-        label = {
+        placeholder = {
             Text(
                 text = stringResource(R.string.search),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.alpha(0.5f)
             )
-        }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent
+        )
     )
 }
 
 @Composable
 fun SearchButton() {
+
     IconButton(
         modifier = Modifier
             .size(48.dp),
@@ -140,6 +157,7 @@ fun SearchButton() {
 
 @Composable
 fun Sort(viewModel: MainViewModel) {
+
     Row(
         modifier = Modifier.offset(x = 188.dp, y = 128.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -147,12 +165,14 @@ fun Sort(viewModel: MainViewModel) {
         Text(
             text = stringResource(R.string.filter_name),
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Right
         )
+
         IconButton(
             modifier = Modifier
                 .size(16.dp),
-            onClick = {viewModel.onSort()}
+            onClick = { viewModel.onSort() }
         ) {
             Icon(
                 painterResource(R.drawable.arrow_down_up),
@@ -161,15 +181,17 @@ fun Sort(viewModel: MainViewModel) {
                 tint = MaterialTheme.colorScheme.secondary
             )
         }
+
     }
 }
 
 @Composable
 fun CourseCard(course: CourseDomain, onBookmarkClick: () -> Unit) {
+
     Box(
         modifier = Modifier
             .size(328.dp, 236.dp)
-            .offset(x = 16.dp, y = 56.dp)
+            .offset(x = 16.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.primary),
     ) {
@@ -180,7 +202,15 @@ fun CourseCard(course: CourseDomain, onBookmarkClick: () -> Unit) {
                 .height(114.dp)
                 .clip(RoundedCornerShape(12.dp))
         ) {
-            Bookmark(course,onBookmarkClick)
+            Image(
+                painter = painterResource(R.drawable.card_image),
+                contentDescription = stringResource(
+                    R.string.card_image
+                ),
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Bookmark(course, onBookmarkClick)
 
             Row(
                 modifier = Modifier.offset(x = 8.dp, y = 84.dp),
@@ -300,7 +330,7 @@ fun BottomSection(course: CourseDomain) {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
                 Text(
-                    text = course.price, style = MaterialTheme.typography.titleMedium,
+                    text = "${course.price} ₽", style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }

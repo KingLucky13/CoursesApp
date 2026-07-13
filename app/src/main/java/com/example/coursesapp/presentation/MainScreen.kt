@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.coursesapp.BottomBar
 import com.example.coursesapp.R
@@ -59,11 +60,11 @@ fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
     LazyColumn(
         modifier = Modifier
             .offset(x = 16.dp, y = 164.dp)
-            .fillMaxSize(),
+            .width(328.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(state) { course ->
-            CourseCard(course,viewModel)
+            CourseCard(course,{viewModel.onBookmark(course.id)})
         }
     }
 }
@@ -164,7 +165,7 @@ fun Sort(viewModel: MainViewModel) {
 }
 
 @Composable
-fun CourseCard(course: CourseDomain, viewModel: MainViewModel) {
+fun CourseCard(course: CourseDomain, onBookmarkClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(328.dp, 236.dp)
@@ -179,7 +180,7 @@ fun CourseCard(course: CourseDomain, viewModel: MainViewModel) {
                 .height(114.dp)
                 .clip(RoundedCornerShape(12.dp))
         ) {
-            Bookmark(course,viewModel)
+            Bookmark(course,onBookmarkClick)
 
             Row(
                 modifier = Modifier.offset(x = 8.dp, y = 84.dp),
@@ -197,7 +198,7 @@ fun CourseCard(course: CourseDomain, viewModel: MainViewModel) {
 }
 
 @Composable
-fun Bookmark(course: CourseDomain, viewModel: MainViewModel) {
+fun Bookmark(course: CourseDomain, onBookmarkClick: () -> Unit) {
 
     val iconId = if (course.hasLike) {
         R.drawable.bookmark_fill
@@ -220,7 +221,7 @@ fun Bookmark(course: CourseDomain, viewModel: MainViewModel) {
             )
             .padding(6.dp)
             .background(Glass),
-        onClick = {viewModel.onBookmark(courseId = course.id)}
+        onClick = onBookmarkClick
     ) {
         Icon(
             painterResource(iconId),

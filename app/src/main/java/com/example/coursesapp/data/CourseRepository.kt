@@ -28,6 +28,15 @@ class CourseRepository(
         }
     }
 
+    suspend fun getFavouriteCourses(): Result<List<CourseDomain>>{
+        return try{
+            val favouriteCourses =database.courseDao().getFavouriteCourses()
+            return Result.success(CourseMapper.toDomainListFromEntities(favouriteCourses))
+        } catch (e: Error) {
+            Result.failure(IOException(e.message))
+        }
+    }
+
     suspend fun updateBookmark(courseId:Int,hasBookmark: Boolean){
         database.courseDao().updateBookmark(courseId,hasBookmark)
     }

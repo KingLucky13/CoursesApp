@@ -67,7 +67,7 @@ fun AppNavigation() {
         NavHost(
             modifier = Modifier.padding(padding),
             navController = navController,
-            startDestination = Route.Login.name
+            startDestination = Route.Main.name
         ) {
             composable(Route.Login.name) {
                 LoginScreen(navController = navController)

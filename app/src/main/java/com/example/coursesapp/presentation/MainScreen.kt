@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,7 +61,7 @@ fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(state) { course ->
-            CourseCard(course)
+            CourseCard(course,viewModel)
         }
     }
 }
@@ -162,7 +163,7 @@ fun Sort() {
 }
 
 @Composable
-fun CourseCard(course: CourseDomain) {
+fun CourseCard(course: CourseDomain, viewModel: MainViewModel) {
     Box(
         modifier = Modifier
             .size(328.dp, 236.dp)
@@ -177,7 +178,7 @@ fun CourseCard(course: CourseDomain) {
                 .height(114.dp)
                 .clip(RoundedCornerShape(12.dp))
         ) {
-            Bookmark()
+            Bookmark(course,viewModel)
 
             Row(
                 modifier = Modifier.offset(x = 8.dp, y = 84.dp),
@@ -195,7 +196,19 @@ fun CourseCard(course: CourseDomain) {
 }
 
 @Composable
-fun Bookmark() {
+fun Bookmark(course: CourseDomain, viewModel: MainViewModel) {
+
+    val iconId = if (course.hasLike) {
+        R.drawable.bookmark_fill
+    } else {
+        R.drawable.bookmark
+    }
+    val tintColor = if (course.hasLike) {
+        MaterialTheme.colorScheme.secondary
+    } else {
+        MaterialTheme.colorScheme.onPrimary
+    }
+
     IconButton(
         modifier = Modifier
             .size(28.dp)
@@ -206,10 +219,10 @@ fun Bookmark() {
             )
             .padding(6.dp)
             .background(Glass),
-        onClick = {}
+        onClick = {viewModel.onBookmark(courseId = course.id)}
     ) {
         Icon(
-            painterResource(R.drawable.bookmark),
+            painterResource(iconId),
             contentDescription = "Bookmark",
             modifier = Modifier.size(16.dp),
             tint = MaterialTheme.colorScheme.onPrimary

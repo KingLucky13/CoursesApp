@@ -14,15 +14,3 @@ data class CourseDomain(
     val publishDate: LocalDate
 )
 
-fun CourseDTO.toDomain(): CourseDomain {
-    return CourseDomain(
-        id = id,
-        title = title,
-        text = text,
-        price = price,
-        rate = rate,
-        startDate = LocalDate.parse(startDate),
-        hasLike = hasLike,
-        publishDate = LocalDate.parse(publishDate)
-    )
-}

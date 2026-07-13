@@ -24,14 +24,18 @@ class MainViewModel(private val courseRepository: CourseRepository) : ViewModel(
     }
 
     fun onBookmark(courseId: Int) {
-        _stateFlow.update { courses ->
-            courses.map { course ->
-                if (courseId == course.id) {
-                    course.copy(hasLike = !course.hasLike)
-                } else {
-                    course
+        viewModelScope.launch {
+            _stateFlow.update { courses ->
+                courses.map { course ->
+                    if (courseId == course.id) {
+                        course.copy(hasLike = !course.hasLike)
+                    } else {
+                        course
+                    }
                 }
             }
+            val hasBookmark = _stateFlow.value.find { it.id == courseId }!!.hasLike
+            courseRepository.updateBookmark(courseId, hasBookmark)
         }
     }
 

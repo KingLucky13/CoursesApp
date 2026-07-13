@@ -1,5 +1,6 @@
 package com.example.coursesapp.data
 
+import androidx.room.Room
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -14,6 +15,18 @@ val dataModule = module {
     }
 
     single {
-        CourseRepository(coursesApi = get())
+        Room.databaseBuilder(
+            get(),
+            AppDatabase::class.java,
+            "app_database"
+        ).build()
+    }
+
+    single {
+        CourseRepository(coursesApi = get(), database = get())
+    }
+
+    single<CourseDao> {
+        get<AppDatabase>().courseDao()
     }
 }

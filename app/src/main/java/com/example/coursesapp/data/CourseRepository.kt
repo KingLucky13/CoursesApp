@@ -1,26 +1,35 @@
 package com.example.coursesapp.data
 
-import android.util.Log
 import com.example.coursesapp.domain.CourseDomain
-import com.example.coursesapp.domain.toDomain
 import java.io.IOException
 
 class CourseRepository(
-    private val coursesApi: CoursesApi
+    private val coursesApi: CoursesApi,
+    private val database: AppDatabase
 ) {
 
     suspend fun getAllCourses(): Result<List<CourseDomain>> {
         return try {
-            val coursesResponse = coursesApi.getCourses()
-            if (coursesResponse.isSuccessful && coursesResponse.body() != null) {
-                val courses = coursesResponse.body()!!.courses.map { it.toDomain() }
-                return Result.success(courses)
+            val localCourses = database.courseDao().getAllCourses()
+            if (localCourses.isNotEmpty()) {
+                return Result.success(CourseMapper.toDomainListFromEntities(localCourses))
             } else {
-                return Result.failure(IOException("Fail"))
+                val coursesResponse = coursesApi.getCourses()
+                if (coursesResponse.isSuccessful && coursesResponse.body() != null) {
+                    val courses = CourseMapper.toDomainListFromDTO(coursesResponse.body()!!.courses)
+                    database.courseDao().insertAllCourses(CourseMapper.toEntityList(courses))
+                    return Result.success(courses)
+                } else {
+                    return Result.failure(IOException("Fail"))
+                }
             }
         } catch (e: Error) {
             Result.failure(IOException(e.message))
         }
+    }
+
+    suspend fun updateBookmark(courseId:Int,hasBookmark: Boolean){
+        database.courseDao().updateBookmark(courseId,hasBookmark)
     }
 }
 

@@ -47,13 +47,15 @@ import com.example.coursesapp.domain.CourseDomain
 import com.example.coursesapp.ui.theme.CoursesAppTheme
 import com.example.coursesapp.ui.theme.Glass
 import org.koin.androidx.compose.koinViewModel
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
     val state by viewModel.stateFlow.collectAsState()
 
     Search()
-    Sort()
+    Sort(viewModel)
     LazyColumn(
         modifier = Modifier
             .offset(x = 16.dp, y = 164.dp)
@@ -135,9 +137,8 @@ fun SearchButton() {
     }
 }
 
-@Preview
 @Composable
-fun Sort() {
+fun Sort(viewModel: MainViewModel) {
     Row(
         modifier = Modifier.offset(x = 188.dp, y = 128.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -150,7 +151,7 @@ fun Sort() {
         IconButton(
             modifier = Modifier
                 .size(16.dp),
-            onClick = {}
+            onClick = {viewModel.onSort()}
         ) {
             Icon(
                 painterResource(R.drawable.arrow_down_up),
@@ -225,7 +226,7 @@ fun Bookmark(course: CourseDomain, viewModel: MainViewModel) {
             painterResource(iconId),
             contentDescription = "Bookmark",
             modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.onPrimary
+            tint = tintColor
         )
     }
 }
@@ -261,6 +262,8 @@ fun Info1(course: CourseDomain) {
 
 @Composable
 fun Info2(course: CourseDomain) {
+
+    val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("ru"))
     Box(
         modifier = Modifier
             .padding(horizontal = 6.dp, vertical = 4.dp)
@@ -268,7 +271,7 @@ fun Info2(course: CourseDomain) {
             .background(Glass)
     ) {
         Text(
-            text = course.publishDate,
+            text = course.startDate.format(formatter),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onPrimary
         )

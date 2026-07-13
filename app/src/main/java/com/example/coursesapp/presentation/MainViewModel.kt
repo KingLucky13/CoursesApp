@@ -24,13 +24,21 @@ class MainViewModel(private val courseRepository: CourseRepository) : ViewModel(
     }
 
     fun onBookmark(courseId: Int) {
-        _stateFlow.update { state ->
-            state.map { course ->
+        _stateFlow.update { courses ->
+            courses.map { course ->
                 if (courseId == course.id) {
                     course.copy(hasLike = !course.hasLike)
                 } else {
                     course
                 }
+            }
+        }
+    }
+
+    fun onSort(){
+        _stateFlow.update { courses ->
+            courses.sortedByDescending{ course ->
+                course.publishDate
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.coursesapp.domain
 
 import com.example.coursesapp.data.CourseDTO
+import java.time.LocalDate
 
 data class CourseDomain(
     val id: Int,
@@ -8,9 +9,9 @@ data class CourseDomain(
     val text: String,
     val price: String,
     val rate: String,
-    val startDate: String,
+    val startDate: LocalDate,
     val hasLike: Boolean,
-    val publishDate: String
+    val publishDate: LocalDate
 )
 
 fun CourseDTO.toDomain(): CourseDomain {
@@ -20,8 +21,8 @@ fun CourseDTO.toDomain(): CourseDomain {
         text = text,
         price = price,
         rate = rate,
-        startDate = startDate,
+        startDate = LocalDate.parse(startDate),
         hasLike = hasLike,
-        publishDate = publishDate
+        publishDate = LocalDate.parse(publishDate)
     )
 }

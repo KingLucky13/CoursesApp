@@ -1,26 +1,29 @@
-package com.example.coursesapp.presentation
+package com.example.coursesapp.presentation.favourites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.coursesapp.data.CourseRepository
 import com.example.coursesapp.domain.CourseDomain
+import com.example.coursesapp.domain.usecases.GetFavouriteCoursesUseCase
+import com.example.coursesapp.domain.usecases.UpdateBookmarkUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class FavouritesViewModel(private val courseRepository: CourseRepository): ViewModel(){
+class FavouritesViewModel(
+    private val getFavouriteCoursesUseCase: GetFavouriteCoursesUseCase,
+    private val updateBookmarkUseCase: UpdateBookmarkUseCase
+) : ViewModel() {
 
     private val _stateFlow: MutableStateFlow<List<CourseDomain>> = MutableStateFlow(emptyList())
     val stateFlow = _stateFlow.asStateFlow()
 
     init {
         viewModelScope.launch {
-            runCatching {
-                courseRepository.getFavouriteCourses()
-            }.onSuccess { coursesResponse ->
-                _stateFlow.value = coursesResponse.getOrNull() ?: emptyList()
-            }
+            getFavouriteCoursesUseCase()
+                .onSuccess { courses ->
+                    _stateFlow.value = courses
+                }
         }
     }
 
@@ -40,7 +43,7 @@ class FavouritesViewModel(private val courseRepository: CourseRepository): ViewM
                 courses.filter { it.id != courseId }
             }
 
-            courseRepository.updateBookmark(courseId, false)
+            updateBookmarkUseCase(courseId, false)
         }
     }
 

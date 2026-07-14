@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CoursesApp</string>
     <string name="details">Подробнее</string>
-    <string name="search">Search for courses</string>
+    <string name="search">Search courses...</string>
     <string name="filter_name">По дате добавления</string>
     <string name="login">Вход</string>
     <string name="email">Email</string>
@@ -15,4 +15,6 @@
     <string name="favourites">Избранное</string>
     <string name="profile">Аккаунт</string>
     <string name="card_image">Card image</string>
+    <string name="vk_uri">"https://vk.com"</string>
+    <string name="ok_uri">"https://ok.ru"</string>
 </resources>

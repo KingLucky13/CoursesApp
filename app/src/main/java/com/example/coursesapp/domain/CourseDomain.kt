@@ -1,6 +1,6 @@
 package com.example.coursesapp.domain
 
-import com.example.coursesapp.data.CourseDTO
+import com.example.coursesapp.data.network.CourseDTO
 import java.time.LocalDate
 
 data class CourseDomain(

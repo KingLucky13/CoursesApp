@@ -1,35 +1,26 @@
-package com.example.coursesapp.presentation
+package com.example.coursesapp.presentation.main
 
-import android.content.res.Resources
-import android.graphics.Paint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,15 +33,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
-import com.example.coursesapp.BottomBar
+import androidx.core.graphics.alpha
 import com.example.coursesapp.R
 import com.example.coursesapp.domain.CourseDomain
-import com.example.coursesapp.ui.theme.CoursesAppTheme
-import com.example.coursesapp.ui.theme.Glass
 import org.koin.androidx.compose.koinViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -59,9 +45,9 @@ import java.util.Locale
 fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
     val state by viewModel.stateFlow.collectAsState()
 
-    Search(state.search, viewModel)
+    Search(state.search, viewModel::onSearchChanged)
 
-    Sort(viewModel)
+    Sort(viewModel::onSort)
 
     LazyColumn(
         modifier = Modifier
@@ -76,7 +62,7 @@ fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
 }
 
 @Composable
-fun Search(searchString: String, viewModel: MainViewModel) {
+fun Search(searchString: String, onSearchChanged: (String) -> Unit) {
     Row(
         modifier = Modifier
             .size(328.dp, 56.dp)
@@ -85,7 +71,7 @@ fun Search(searchString: String, viewModel: MainViewModel) {
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
-        SearchBar(searchString, viewModel)
+        SearchBar(searchString, onSearchChanged)
 
         IconButton(
             modifier = Modifier
@@ -109,11 +95,11 @@ fun Search(searchString: String, viewModel: MainViewModel) {
 }
 
 @Composable
-fun SearchBar(searchString: String, viewModel: MainViewModel) {
+fun SearchBar(searchString: String, onSearchChanged: (String) -> Unit) {
 
     OutlinedTextField(
         value = searchString,
-        onValueChange = { viewModel.onSearchChanged(it) },
+        onValueChange = onSearchChanged,
         modifier = Modifier
             .size(264.dp, 56.dp)
             .clip(RoundedCornerShape(28.dp))
@@ -156,7 +142,7 @@ fun SearchButton() {
 }
 
 @Composable
-fun Sort(viewModel: MainViewModel) {
+fun Sort(onSortClicked: () -> Unit) {
 
     Row(
         modifier = Modifier.offset(x = 188.dp, y = 128.dp),
@@ -172,7 +158,7 @@ fun Sort(viewModel: MainViewModel) {
         IconButton(
             modifier = Modifier
                 .size(16.dp),
-            onClick = { viewModel.onSort() }
+            onClick = onSortClicked
         ) {
             Icon(
                 painterResource(R.drawable.arrow_down_up),
@@ -250,7 +236,7 @@ fun Bookmark(course: CourseDomain, onBookmarkClick: () -> Unit) {
                 RoundedCornerShape(20.dp)
             )
             .padding(6.dp)
-            .background(Glass),
+            .background(colorResource(R.color.light_grey).copy(alpha = 0.3f)),
         onClick = onBookmarkClick
     ) {
         Icon(
@@ -268,7 +254,7 @@ fun Info1(course: CourseDomain) {
         modifier = Modifier
             .padding(horizontal = 6.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Glass)
+            .background(colorResource(R.color.light_grey).copy(alpha = 0.3f))
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -299,7 +285,7 @@ fun Info2(course: CourseDomain) {
         modifier = Modifier
             .padding(horizontal = 6.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Glass)
+            .background(colorResource(R.color.light_grey).copy(alpha = 0.3f))
     ) {
         Text(
             text = course.startDate.format(formatter),

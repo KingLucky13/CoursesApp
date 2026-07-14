@@ -1,6 +1,10 @@
-package com.example.coursesapp.data
+package com.example.coursesapp.di
 
 import androidx.room.Room
+import com.example.coursesapp.data.bd.AppDatabase
+import com.example.coursesapp.data.bd.CourseDao
+import com.example.coursesapp.data.CourseRepository
+import com.example.coursesapp.data.network.CoursesApi
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

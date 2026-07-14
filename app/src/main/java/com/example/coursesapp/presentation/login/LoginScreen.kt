@@ -1,7 +1,6 @@
-package com.example.coursesapp.presentation
+package com.example.coursesapp.presentation.login
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,8 +22,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -61,6 +57,10 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel(), navController: NavC
 
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    val vkUri = stringResource(R.string.vk_uri).toUri()
+    val okUri = stringResource(R.string.ok_uri).toUri()
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
@@ -75,7 +75,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel(), navController: NavC
                 LoginEvent.OpenVk -> {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
-                        "https://vk.com".toUri()
+                        vkUri
                     )
                     context.startActivity(intent)
                 }
@@ -83,7 +83,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel(), navController: NavC
                 LoginEvent.OpenOk -> {
                     val intent = Intent(
                         Intent.ACTION_VIEW,
-                        "https://ok.ru".toUri()
+                        okUri
                     )
                     context.startActivity(intent)
                 }
@@ -113,7 +113,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel(), navController: NavC
             thickness = 1.dp,
             color = colorResource(R.color.stroke)
         )
-        SocialMedia(viewModel)
+        SocialMedia(viewModel::onVkClicked,viewModel::onOkClicked)
     }
 }
 
@@ -262,7 +262,7 @@ fun Actions() {
 }
 
 @Composable
-fun SocialMedia(viewModel: LoginViewModel) {
+fun SocialMedia(onVkClicked: ()-> Unit, onOkClicked: ()-> Unit) {
     Row(
         modifier = Modifier
             .offset(x = 16.dp, y = 534.dp)
@@ -274,7 +274,7 @@ fun SocialMedia(viewModel: LoginViewModel) {
                 .size(156.dp, 40.dp)
                 .clip(RoundedCornerShape(30.dp))
                 .background(colorResource(R.color.vk_blue)),
-            onClick = { viewModel.onVkClicked() }
+            onClick = onVkClicked
         ) {
             Icon(
                 painterResource(R.drawable.vk),
@@ -296,7 +296,7 @@ fun SocialMedia(viewModel: LoginViewModel) {
                         )
                     )
                 ),
-            onClick = { viewModel.onOkClicked() }
+            onClick = onOkClicked
         ) {
             Column {
                 Icon(

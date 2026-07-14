@@ -1,4 +1,4 @@
-package com.example.coursesapp.data
+package com.example.coursesapp.data.network
 
 data class CourseDTO(
     val id:Int,
@@ -10,4 +10,3 @@ data class CourseDTO(
     val hasLike:Boolean,
     val publishDate:String
 )
-

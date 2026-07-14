@@ -1,4 +1,4 @@
-package com.example.coursesapp.domain
+package com.example.coursesapp.domain.usecases
 
 import android.util.Patterns
 

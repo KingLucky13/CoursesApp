@@ -1,5 +1,6 @@
-package com.example.coursesapp.data
+package com.example.coursesapp.data.network
 
+import com.example.coursesapp.data.CoursesResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,5 +13,3 @@ interface CoursesApi {
     ): Response<CoursesResponse>
 
 }
-
-

@@ -1,5 +1,8 @@
 package com.example.coursesapp.data
 
+import com.example.coursesapp.data.bd.AppDatabase
+import com.example.coursesapp.data.network.CourseDTO
+import com.example.coursesapp.data.network.CoursesApi
 import com.example.coursesapp.domain.CourseDomain
 import java.io.IOException
 

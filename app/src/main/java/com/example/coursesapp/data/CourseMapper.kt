@@ -1,5 +1,7 @@
 package com.example.coursesapp.data
 
+import com.example.coursesapp.data.bd.CourseEntity
+import com.example.coursesapp.data.network.CourseDTO
 import com.example.coursesapp.domain.CourseDomain
 import java.time.LocalDate
 
@@ -39,7 +41,7 @@ object CourseMapper{
         return entities.map { toDomainFromEntity(it) }
     }
 
-    fun toEntity(courseDomain: CourseDomain): CourseEntity{
+    fun toEntity(courseDomain: CourseDomain): CourseEntity {
         return CourseEntity(
             id = courseDomain.id,
             title = courseDomain.title,

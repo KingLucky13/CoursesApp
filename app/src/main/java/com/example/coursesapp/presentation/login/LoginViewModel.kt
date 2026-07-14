@@ -1,8 +1,8 @@
-package com.example.coursesapp.presentation
+package com.example.coursesapp.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.coursesapp.domain.AuthorizationUseCase
+import com.example.coursesapp.domain.usecases.AuthorizationUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
